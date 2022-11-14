@@ -1,0 +1,11 @@
+echoboii- to do
+
+1. better logging as well as file logging
+
+2. add descriptions for every command
+
+3. update techinf to list all current modules
+
+4. add a substitute wikipedia api command (dedicated to wikipedia module)
+
+5. add comments
