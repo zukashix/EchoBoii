@@ -8,6 +8,9 @@ import discord
 import youtube_dl
 from async_timeout import timeout
 from discord.ext import commands
+
+'''
+# Code to load opus using custom paths, not required on linux/docker builds
 import ctypes
 import json
 
@@ -21,6 +24,7 @@ print("debug: LOADER: Loading Opus . . . /")
 
 c = discord.opus.is_loaded()
 print("debug: LOADER: Opus Is Loaded: ", c)
+'''
 
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''

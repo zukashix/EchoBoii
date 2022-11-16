@@ -3,6 +3,8 @@ from discord.ext import commands
 from time import sleep
 import datetime
 import time
+import os
+import platform
 
 from sys import version_info as pyv
 from discord import __version__ as dcv
@@ -36,9 +38,10 @@ class Debug(commands.Cog):
         bot_ping = int(self.bot.latency * 1000)
         bot_servers = len(self.bot.guilds)
         bot_status = "Online"
-        bot_region = "Asia [IN]"
         bot_stz = "UTC"
-        bot_version = "v_temporary_test_run"
+        bot_version = "v1.0_INDEV"
+        bot_build = "Docker [echoboii-m2-docker-tb1c]"
+        bot_host = str(os.getlogin()) + '@' + str(platform.node())
         current_time = time.time()
         difference = int(round(current_time - start_time))
         uptime = str(datetime.timedelta(seconds=difference))
@@ -49,11 +52,12 @@ class Debug(commands.Cog):
 
         embed.add_field(name = "Bot's Status:", value = bot_status, inline = False)
         embed.add_field(name = "Bot's Ping:", value = bot_ping, inline = False)
-        embed.add_field(name = "Bot's Region:", value = bot_region, inline = False)
         embed.add_field(name = "Standard TimeZone:", value = bot_stz, inline = False)
         embed.add_field(name = "Server Count:", value = bot_servers, inline = False)
         embed.add_field(name = "Bot's Uptime:", value = uptime, inline = False)
         embed.add_field(name = "Bot's Version:", value = bot_version, inline = False)
+        embed.add_field(name = "Bot's Build:", value = bot_build, inline = False)
+        embed.add_field(name = "Bot's Host:", value = bot_host, inline = False)
 
         await ctx.send(embed = embed)
 
