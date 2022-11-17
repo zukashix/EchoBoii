@@ -3,7 +3,6 @@ from discord.ext import commands
 from time import sleep
 import datetime
 import time
-import os
 import platform
 
 from sys import version_info as pyv
@@ -41,7 +40,7 @@ class Debug(commands.Cog):
         bot_stz = "UTC"
         bot_version = "v1.0_INDEV"
         bot_build = "Docker [echoboii-m2-docker-tb1c]"
-        bot_host = str(os.getlogin()) + '@' + str(platform.node())
+        bot_host = str(platform.node())
         current_time = time.time()
         difference = int(round(current_time - start_time))
         uptime = str(datetime.timedelta(seconds=difference))
