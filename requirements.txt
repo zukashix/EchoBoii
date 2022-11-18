@@ -1,6 +1,5 @@
 discord[voice]
 youtube_dl
-#PyNaCl
 requests
 google-api-python-client
 wikipedia
