@@ -2,7 +2,7 @@
     "Memes_URL": "https://www.reddit.com/r/memes/new.json?sort=hot",
     "Weather_API_URL": "http://api.openweathermap.org/data/2.5/weather?q=!!CITY_NAME_GOES_HERE!!&units=metric&APPID=!!API_KEY_GOES_HERE!!",
     "Wikipedia_URL": "https://en.wikipedia.org/wiki/{}",
-    "Webhook_URL": "https://discord.com/api/webhooks/1039420023959191652/OZusbS1X3IFiEKFZEGBv0PrKp89KavL5rzXmEtAXQfRvtaqUilgJnustp3qVcXNhl481",
+    "Webhook_URL": "https://discord.com/api/webhooks/1043095807345315860/Ex6N2Rah7k7XWanwsqCgTymRnVCk2u1vUOfwHzECqKkK_eKWAzaxjRK5HjYSop3_Be9R",
     "Spotify_Token_URL": "https://accounts.spotify.com/api/token",
     "Spotify_API_URL": "https://api.spotify.com"
 }

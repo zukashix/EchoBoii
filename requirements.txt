@@ -1,7 +1,4 @@
 discord[voice]
-opuslib
-wheel
-ffmpeg
 youtube_dl
 PyNaCl
 requests

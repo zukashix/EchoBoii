@@ -5,5 +5,6 @@
     "Lyricgenius_API_KEY": "4iPGJRiWkrOLJ-NYR2_LJImWzQNHnEbfutO_GIfH50NNmSkQCyhhcvP4_WqQWHAl",
     "Spotify_Client_ID": "bc58059f2f3148968b3f0a920e050994",
     "Spotify_Client_Secret": "0503927415184d39b31ccdab0d50933c",
-    "Spotify_API_Version": "v1"
+    "Spotify_API_Version": "v1",
+    "BotVersion": "v1.1_INDEV"
 }

@@ -1,17 +1,13 @@
 # DOCKERFILE for echoboii-rw2 bot
 
-# fetch ubuntu-focal
-FROM ubuntu:18.04
+# fetch base image
+FROM python:3.8-bullseye
 
 # refresh apt repo
 RUN apt update
 
 # install dependencies
-RUN apt install python3.8 -y
-RUN apt install libpython3.8-dev -y
-RUN apt install python3-pip -y
 RUN apt install libopus0 ffmpeg -y
-RUN apt install libffi-dev
 
 # create working environment
 RUN mkdir app
@@ -28,10 +24,13 @@ COPY plugins plugins
 COPY lib lib
 COPY data data
 
+# write docker build data
+RUN rm -f data/build.json
+RUN touch data/build.json
+RUN echo '{"CurrentBuild":"Default-Ub-Docker"}' > data/build.json
+
 # install pip requirements
-RUN python3.8 -m pip install multidict attrs yarl async_timeout cchardet
-RUN python3.8 -m pip install aiosignal
-RUN python3.8 -m pip install -r requirements.txt
+RUN python -m pip install -r requirements.txt
 
 # run bot
-CMD python3.8 bot.py
+CMD python bot.py

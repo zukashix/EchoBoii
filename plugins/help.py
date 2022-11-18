@@ -4,10 +4,10 @@ from time import sleep
 import datetime
 import time
 import platform
+import json
 
 from sys import version_info as pyv
 from discord import __version__ as dcv
-from lyricsgenius import __version__ as lgv
 
 start_time = time.time()
 
@@ -18,7 +18,7 @@ class Debug(commands.Cog):
     @commands.command(name='about', brief='Description about bot.')
     async def about(self, ctx):
         print(f'debug: TRIGGER: about command triggered by {ctx.author} at {ctx.author.guild}')
-        about_bot = "Hello from EchoBoii!\n---------------------\nThis is a discord bot made for fun games and utility commands.\n---------------------\nThe bot was created and being managed by Zukashi#7071\nPlease DM Zukashi#7071 if there are any bugs"
+        about_bot = "Hello from EchoBoii!\n---------------------\nThis is a discord bot made for fun games and utility commands (shitty outdated description and yes im too lazy to update it).\n---------------------\nThe bot was created and being managed by Zukashi#7071 and BraxtonElmer#idkWhatsHisTag\nPlease DM Zukashi#7071 if there are any bugs or use the suggest command"
         await ctx.send(f"```{about_bot}```")
         print(f'debug: TRIGGER: about command complete at {ctx.author.guild}')
 
@@ -38,8 +38,8 @@ class Debug(commands.Cog):
         bot_servers = len(self.bot.guilds)
         bot_status = "Online"
         bot_stz = "UTC"
-        bot_version = "v1.0_INDEV"
-        bot_build = "Docker [echoboii-m2-docker-tb1c]"
+        bot_version = str(json.load(open('data/api_keys.json', 'r'))["BotVersion"])
+        bot_build = str(json.load(open('data/build.json', 'r'))["CurrentBuild"])
         bot_host = str(platform.node())
         current_time = time.time()
         difference = int(round(current_time - start_time))
@@ -55,14 +55,12 @@ class Debug(commands.Cog):
         embed.add_field(name = "Server Count:", value = bot_servers, inline = False)
         embed.add_field(name = "Bot's Uptime:", value = uptime, inline = False)
         embed.add_field(name = "Bot's Version:", value = bot_version, inline = False)
-        embed.add_field(name = "Bot's Build:", value = bot_build, inline = False)
-        embed.add_field(name = "Bot's Host:", value = bot_host, inline = False)
 
         await ctx.send(embed = embed)
 
         if technef.lower() == 'techinf':
             await ctx.send("**Techincal Information:**")
-            await ctx.send("```\nPython {}.{}.{}\n---------------\nDiscord.py v{}\n---------------\nLyricGenius v{}\n---------------\nPing: {}ms```".format(pyv.major, pyv.minor, pyv.micro, dcv, lgv, int(self.bot.latency * 1000)))
+            await ctx.send("```\nPython: {}.{}.{}\n---------------\nDiscord.py: {}\n---------------\nHost Device: {}\n---------------\nBuild: {}```".format(pyv.major, pyv.minor, pyv.micro, dcv, bot_host, bot_build))
 
         print(f"debug: TRIGGER: status command complete at {ctx.author.guild}")
 

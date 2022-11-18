@@ -3,28 +3,31 @@ import functools
 import itertools
 import math
 import random
+from platform import system as currOs
 
 import discord
 import youtube_dl
 from async_timeout import timeout
 from discord.ext import commands
 
-'''
 # Code to load opus using custom paths, not required on linux/docker builds
-import ctypes
-import json
+def loadOpusLib():
+    import ctypes
+    import json
 
-LIBOPUS_PATH_JSON = json.load(open('data/paths.json', 'r'))["Opus_Lib_Path"]
-a = ctypes.util.find_library(LIBOPUS_PATH_JSON)
+    LIBOPUS_PATH_JSON = json.load(open('data/paths.json', 'r'))["Opus_Lib_Path"]
+    a = ctypes.util.find_library(LIBOPUS_PATH_JSON)
 
-print("debug: LOADER: Opus Existance:", a)
+    print("debug: LOADER: Opus Existance:", a)
 
-b = discord.opus.load_opus(a)
-print("debug: LOADER: Loading Opus . . . /")
+    b = discord.opus.load_opus(a)
+    print("debug: LOADER: Loading Opus . . . /")
 
-c = discord.opus.is_loaded()
-print("debug: LOADER: Opus Is Loaded: ", c)
-'''
+    c = discord.opus.is_loaded()
+    print("debug: LOADER: Opus Is Loaded: ", c)
+
+if 'win' in currOs().lower():
+    loadOpusLib()
 
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -477,15 +480,13 @@ class Music(commands.Cog):
             await ctx.invoke(self._join)
 
         async with ctx.typing():
-            try:
-                source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop)
-            except YTDLError as e:
-                await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
-            else:
-                song = Song(source)
+            
+            source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop)
+            
+            song = Song(source)
 
-                await ctx.voice_state.songs.put(song)
-                await ctx.send('Enqueued {}'.format(str(source)))
+            await ctx.voice_state.songs.put(song)
+            await ctx.send('Enqueued {}'.format(str(source)))
         print(f"debug: TRIGGER: music play command complete at {ctx.author.guild}")
 
     @_join.before_invoke

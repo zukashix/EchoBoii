@@ -4,8 +4,6 @@ echoboii- to do
 
 2. add descriptions for every command
 
-3. update techinf to list all current modules
-
 4. add a substitute wikipedia api command (dedicated to wikipedia module)
 
 5. add comments

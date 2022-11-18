@@ -3,6 +3,7 @@ import discord
 import aiohttp
 import json
 from pretty_help import PrettyHelp
+import os
 
 class MyBot(commands.Bot):
     def __init__(self):
@@ -18,6 +19,10 @@ class MyBot(commands.Bot):
             'plugins.utilities',
             'plugins.youtube'
         ]
+
+        if not os.path.isfile('data/build.json'):
+            buildDict = {'CurrentBuild':'Unknown'}
+            json.dump(buildDict, open('data/build.json', 'w'))
 
     async def setup_hook(self):
         self.session = aiohttp.ClientSession()
