@@ -1,28 +1,19 @@
+import logging as prLog
+prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', level=prLog.DEBUG, datefmt='%d-%b-%y %H:%M:%S')
+
 import discord  # discord api
 from discord.ext import commands  # commands extension
 from apiclient.discovery import build  # youtube api
 import json
 from datetime import datetime
 import sys
-import logging
 import aiohttp
 import re
 
 # Some systems will crash without this because Google's Python is built differently
 sys.modules['win32file'] = None
 youtube_key = json.load(open('data/api_keys.json', 'r'))["Youtube_API_KEY"]
-
-from datadog import initialize
-
-options = {
-    'api_key': youtube_key,
-    'app_key': ''
-}
-
-initialize(**options)
-import datadog
-from datadog import statsd
-
+prLog.debug("Loaded youtube key")
 
 class YouTube(commands.Cog):
     """Youtube Commands"""
@@ -35,13 +26,12 @@ class YouTube(commands.Cog):
     async def yt(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send(":x: **Missing/Invalid Subcommand**")
+            prLog.info(f'yt recieved a missing/invalid subcommand by {ctx.author} at {ctx.author.guild}')
 
     @yt.command(aliases=["s"], name='search', brief='Search a video on youtube')
     async def search(self, ctx):
-        print(f"debug: TRIGGER: yt search command triggered by {ctx.author} at {ctx.author.guild}")
-        """Searches YouTube for a video. 
+        prLog.info(f'yt search command started by {ctx.author} at {ctx.author.guild}')
 
-        Returns the first result."""
         try:
             if len(ctx.message.content.split(' ', 3)) == 3:
                 await ctx.send("Arguments needed!\n\nExample: `eB yt search Darude Sandstorm`")
@@ -54,7 +44,7 @@ class YouTube(commands.Cog):
                 else:
                     vidid = search_response.get('items')[0]['id']['videoId']
                     vidurl = "https://www.youtube.com/watch?v=" + vidid
-                    yt_url = "http://www.youtube.com/oembed?url={0}&format=json".format(
+                    yt_url = "https://www.youtube.com/oembed?url={0}&format=json".format(
                         vidurl)
                     metadata = await self.get_json(yt_url)
                     data = discord.Embed(
@@ -71,14 +61,9 @@ class YouTube(commands.Cog):
                         text=f"Command executed by {ctx.author}")
                     try:
                         await ctx.send(embed=data)
-                        statsd.increment('bot.commands.run', 1)
                     except discord.HTTPException:
-                        statsd.increment('bot.commands.errored', 1)
-                        logger.exception("Missing embed links perms")
                         await ctx.send("Looks like the bot doesn't have embed links perms... It kinda needs these, so I'd suggest adding them!")
         except Exception as e:
-            logger.exception(e)
-            statsd.increment('bot.commands.errored', 1)
             data = discord.Embed(title="__***Error in video search!***__",
                                  description="No data for video ID!", colour=discord.Colour(value=11735575))
             data.add_field(name="Whoops!", value="Looks like the API returned a video, but there is no associated data with it!\nThis could be due to the video being unavailable anymore, or it is country blocked!", inline=False)
@@ -88,16 +73,14 @@ class YouTube(commands.Cog):
             try:
                 await ctx.send(embed=data)
             except discord.HTTPException:
-                logger.exception("Missing embed links perms")
                 await ctx.send("Looks like the bot doesn't have embed links perms... It kinda needs these, so I'd suggest adding them!")
-        print(f"debug: TRIGGER: yt search command complete at {ctx.author.guild}")
+        
+        prLog.info(f'yt search command finished by {ctx.author} at {ctx.author.guild}')
 
     @yt.command(aliases=["c"], name='channel', brief='Search for a youtube channel')
     async def channel(self, ctx):
-        print(f"debug: TRIGGER: yt channel command triggered by {ctx.author} at {ctx.author.guild}")
-        """Searches YouTube for a channel. 
+        prLog.info(f'yt channel command started by {ctx.author} at {ctx.author.guild}')
 
-        Returns the first result."""
         try:
             if len(ctx.message.content.split(' ', 3)) == 3:
                 await ctx.send("Arguments needed!\n\nExample: `eB yt channel TrapNation`")
@@ -130,14 +113,9 @@ class YouTube(commands.Cog):
                         text=f"Command executed by {ctx.author}")
                     try:
                         await ctx.send(embed=data)
-                        statsd.increment('bot.commands.run', 1)
                     except discord.HTTPException:
-                        statsd.increment('bot.commands.errored', 1)
-                        logger.exception("Missing embed links perms")
                         await ctx.send("Looks like the bot doesn't have embed links perms... It kinda needs these, so I'd suggest adding them!")
         except Exception as e:
-            logger.exception(e)
-            statsd.increment('bot.commands.errored', 1)
             data = discord.Embed(title="__***Error in channel search!***__",
                                  description="No data for channel ID!", colour=discord.Colour(value=11735575))
             data.add_field(name="Whoops!", value="Looks like the API returned a channel, but there is no associated data with it!\nThis could be due to the video being unavailable anymore, or it is country blocked!", inline=False)
@@ -147,14 +125,13 @@ class YouTube(commands.Cog):
             try:
                 await ctx.send(embed=data)
             except discord.HTTPException:
-                logger.exception("Missing embed links perms")
                 await ctx.send("Looks like the bot doesn't have embed links perms... It kinda needs these, so I'd suggest adding them!")
-        print(f"debug: TRIGGER: yt channel command complete at {ctx.author.guild}")
+        prLog.info(f'yt channel command finished by {ctx.author} at {ctx.author.guild}')
 
     @yt.command(aliases=['l'], name='lookup', brief='Reverse lookup a youtube video')
     async def lookup(self, ctx):
-        print(f"debug: TRIGGER: yt lookup command triggered by {ctx.author} at {ctx.author.guild}")
-        """Reverse lookup for youtube videos. Returns statistics and stuff"""
+        prLog.info(f'yt lookup command started by {ctx.author} at {ctx.author.guild}')
+
         try:
             if len(ctx.message.content.split(' ', 3)) == 3:
                 await ctx.send("Arguments needed!\n\nExample: `eB yt lookup https://www.youtube.com/watch?v=dQw4w9WgXcQ`")
@@ -170,7 +147,7 @@ class YouTube(commands.Cog):
                     if match2:
                         a = match2.group(1)
                         q = 'https://www.youtube.com/watch?v={}'.format(a)
-                    yt_url = "http://www.youtube.com/oembed?url={0}&format=json".format(
+                    yt_url = "https://www.youtube.com/oembed?url={0}&format=json".format(
                         q)
                     metadata = await self.get_json(yt_url)
                     youtube = build("youtube", "v3", developerKey=youtube_key)
@@ -195,16 +172,11 @@ class YouTube(commands.Cog):
                             text=f"Command executed by {ctx.author}")
                     try:
                         await ctx.send(embed=data)
-                        statsd.increment('bot.commands.run', 1)
                     except discord.HTTPException:
-                        statsd.increment('bot.commands.errored', 1)
-                        logger.exception("Missing embed links perms")
                         await ctx.send("Looks like the bot doesn't have embed links perms... It kinda needs these, so I'd suggest adding them!")
                 else:
                     await ctx.send("Whoops! Looks like you didn't specify a URL for me to lookup!")
         except Exception as e:
-            logger.exception(e)
-            statsd.increment('bot.commands.errored', 1)
             data = discord.Embed(title="__***Error in reverse lookup!***__",
                                  description="No data for video ID!", colour=discord.Colour(value=11735575))
             data.add_field(name="Whoops!", value="Looks like the API returned info for the video, but there is no associated data with it!\nThis could be due to the video being unavailable anymore, or it is country blocked!", inline=False)
@@ -214,14 +186,14 @@ class YouTube(commands.Cog):
             try:
                 await ctx.send(embed=data)
             except discord.HTTPException:
-                logger.exception("Missing embed links perms")
                 await ctx.send("Looks like the bot doesn't have embed links perms... It kinda needs these, so I'd suggest adding them!")
-        print(f"debug: TRIGGER: yt lookup command complete at {ctx.author.guild}")
+        
+        prLog.info(f'yt lookup command finished by {ctx.author} at {ctx.author.guild}')
 
     @yt.command(aliases=['n'], name='new', brief='Find newest video of a channel')
     async def new(self, ctx):
-        print(f"debug: TRIGGER: yt new command triggered by {ctx.author} at {ctx.author.guild}")
-        """Returns the newest video for the specified channel"""
+        prLog.info(f'yt new command started by {ctx.author} at {ctx.author.guild}')
+
         try:
             if len(ctx.message.content.split(' ', 3)) == 3:
                 await ctx.send("Arguments needed!\n\nExample: `eB yt new Kurzgesagt`")
@@ -265,15 +237,12 @@ class YouTube(commands.Cog):
                         text=f"Command executed by {ctx.author}")
                 try:
                     await ctx.send(embed=data)
-                    statsd.increment('bot.commands.run', 1)
                 except discord.HTTPException:
-                    statsd.increment('bot.commands.errored', 1)
-                    logger.exception("Missing embed links perms")
                     await ctx.send("Looks like the bot doesn't have embed links perms... It kinda needs these, so I'd suggest adding them!")
         except Exception as e:
-            logger.exception(e)
-            statsd.increment('bot.commands.errored', 1)
-        print(f"debug: TRIGGER: yt new command triggered by {ctx.author} at {ctx.author.guild}")
+            print(e)
+
+        prLog.info(f'yt new command finished by {ctx.author} at {ctx.author.guild}')
 
     async def get_json(self, yt_url):
         async with self.session.get(yt_url) as r:
@@ -285,6 +254,5 @@ class YouTube(commands.Cog):
 
 
 async def setup(bot):
-    global logger
-    logger = logging.getLogger('yt')
     await bot.add_cog(YouTube(bot))
+    prLog.debug("Plugin youtube is loaded")

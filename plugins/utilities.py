@@ -1,3 +1,6 @@
+import logging as prLog
+prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', level=prLog.DEBUG, datefmt='%d-%b-%y %H:%M:%S')
+
 import discord
 import random
 from discord.ext import commands
@@ -12,7 +15,8 @@ class Utilities(commands.Cog):
 
     @commands.command(name='echo', brief='Make the bot say something')
     async def echo(self, ctx, *, msg = None):
-        print(f'debug: TRIGGER: echo command triggered by {ctx.author} at {ctx.author.guild}')
+        prLog.info(f'echo command started by {ctx.author} at {ctx.author.guild}')
+
         if msg is None:
             await ctx.send("Please define a message to echo")
         elif '@everyone' in str(msg):
@@ -20,8 +24,9 @@ class Utilities(commands.Cog):
         else:
             msg = str(msg)
             await ctx.channel.purge(limit = 1)
-            await ctx.send(msg)        
-        print(f'debug: TRIGGER: echo command complete at {ctx.author.guild}')
+            await ctx.send(msg)      
+
+        prLog.info(f'echo command finished by {ctx.author} at {ctx.author.guild}')
         
     '''@commands.command()
     async def math(self, ctx, *, equation):
@@ -43,7 +48,8 @@ class Utilities(commands.Cog):
 
     @commands.command(name='typetest', brief='Test your typing speed')
     async def typetest(self, ctx):
-        print(f"debug: TRIGGER: typetest command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f'typetest command started by {ctx.author} at {ctx.author.guild}')
+
         typelist = [
             "Success comes from the inside out. In order to change what is on the outside, you must first change what is on the inside.",
             "Once you embrace your value, talents and strengths, it neutralizes when others think less of you.",
@@ -95,11 +101,12 @@ class Utilities(commands.Cog):
                 difference = int(round(type_end_time - type_start_time))
                 time_taken = str(datetime.timedelta(seconds=difference))
                 await ctx.send(f'**You couldnt type the exact thing**\n**What you had to type:** {chosen_typesent}\n**What you typed:** `{msgf}`\n**Time Taken:** {time_taken}')
-        print(f"debug: TRIGGER: typetest command complete at {ctx.author.guild}")
-
+        
+        prLog.info(f'typetest command finished by {ctx.author} at {ctx.author.guild}')
+        
     @commands.command(name='pfp', brief='Download someone\'s profile picture')
     async def pfp(self, ctx, member: discord.Member = None):
-        print(f"debug: TRIGGER: pfp command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f'pfp command started by {ctx.author} at {ctx.author.guild}')
 
         if member is None:
             member = ctx.author
@@ -108,11 +115,12 @@ class Utilities(commands.Cog):
         embed.set_image(url = member.avatar.url)
         embed.set_footer(text = f"Command executed by {ctx.author}")
         await ctx.send(embed = embed)
-        print(f"debug: TRIGGER: pfp command complete at {ctx.author.guild}")
+        
+        prLog.info(f'pfp command finished by {ctx.author} at {ctx.author.guild}')
 
     @commands.command(name='announce', brief='Announce a special formatted message in a channel')
     async def announce(self, ctx, channel: discord.TextChannel, *, announcement):
-        print(f"debug: TRIGGER: announce command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f'announce command started by {ctx.author} at {ctx.author.guild}')
 
         announcement = str(announcement)
         utcrn = datetime.datetime.utcnow()
@@ -127,11 +135,12 @@ class Utilities(commands.Cog):
 
         await channel.send(embed = embed)
 
-        print(f"debug: TRIGGER: announce command complete at {ctx.author.guild}")
+        prLog.info(f'announce command finished by {ctx.author} at {ctx.author.guild}')
 
     @commands.command(name='whois', brief='Find information on a user')
     async def whois(self, ctx, *, member: discord.Member = None):
-        print(f"debug: TRIGGER: whois command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f'whois command started by {ctx.author} at {ctx.author.guild}')
+
         if member is None:
             member = ctx.author
 
@@ -154,11 +163,12 @@ class Utilities(commands.Cog):
         embed.add_field(name = "Is A Bot?:", value = member.bot, inline = False)
 
         await ctx.send(embed = embed)
-        print(f"debug: TRIGGER: whois command complete at {ctx.author.guild}")
+        
+        prLog.info(f'whois command finished by {ctx.author} at {ctx.author.guild}')
 
     @commands.command(name='sinfo', brief='Get information on the current server')
     async def sinfo(self, ctx):
-        print(f'debug: TRIGGER: sinfo command trigger by {ctx.author} at {ctx.author.guild}')
+        prLog.info(f'sinfo command started by {ctx.author} at {ctx.author.guild}')
 
         server = ctx.author.guild
         embed = discord.Embed(
@@ -182,11 +192,13 @@ class Utilities(commands.Cog):
         embed.add_field(name = "Emojis:", value = len(server.emojis), inline = False) 
 
         await ctx.send(embed = embed)
-        print(f'debug: TRIGGER: sinfo command complete at {ctx.author.guild}')
+        prLog.info(f'sinfo command finished by {ctx.author} at {ctx.author.guild}')
 
     @commands.command(name='clear', aliases=['cls'], brief='Clears messages', description='Clears a specified amount of messages. Takes no big than 100 messages at once.')
     @has_permissions(manage_messages=True)
     async def clear(self, ctx, amt):
+        prLog.info(f'clear command started by {ctx.author} at {ctx.author.guild}')
+
         try:
             amt = int(amt)
         except:
@@ -214,10 +226,13 @@ class Utilities(commands.Cog):
             await sleep(3)
             await msgsent.delete()
 
+        prLog.info(f'clear command finished by {ctx.author} at {ctx.author.guild}')
+
     @clear.error
     async def clear_error(self, ctx, error):
         if isinstance(error, CheckFailure):
             await ctx.send(ctx.message.channel, "Looks like you don't have the `manage_messages` permission.")
+            prLog.error("recent clear command user did not have manage messages permission")
       
     '''@math.error
     async def cmd_math_error(self, ctx, error):
@@ -228,3 +243,4 @@ class Utilities(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(Utilities(bot))
+    prLog.debug("Plugin utilities is loaded")

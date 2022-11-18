@@ -1,3 +1,6 @@
+import logging as prLog
+prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', level=prLog.DEBUG, datefmt='%d-%b-%y %H:%M:%S')
+
 from discord.ext import commands
 import traceback
 import json
@@ -5,6 +8,7 @@ import requests
 import datetime
 
 WEBHOOK_URL = json.load(open('data/urls.json', 'r'))["Webhook_URL"]
+prLog.debug("Loaded WEBHOOK_URL")
 
 class ExceptionHandler(commands.Cog):
     """Ignore. This cog handles runtime errors"""
@@ -33,6 +37,7 @@ class ExceptionHandler(commands.Cog):
             }
 
             requests.post(url, data)
+            prLog.error('An error that occurred has been passed to webhook with identification data: {}'.format('`ZDPY-ECHORW2_{}`'.format(timestamp)))
 
     # @commands.command()
     # async def errortest(self, ctx):
@@ -40,3 +45,4 @@ class ExceptionHandler(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(ExceptionHandler(bot))
+    prLog.debug("Plugin errorHandler is loaded")

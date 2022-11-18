@@ -1,3 +1,6 @@
+import logging as prLog
+prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', level=prLog.DEBUG, datefmt='%d-%b-%y %H:%M:%S')
+
 import asyncio
 import functools
 import itertools
@@ -16,15 +19,10 @@ def loadOpusLib():
     import json
 
     LIBOPUS_PATH_JSON = json.load(open('data/paths.json', 'r'))["Opus_Lib_Path"]
-    a = ctypes.util.find_library(LIBOPUS_PATH_JSON)
-
-    print("debug: LOADER: Opus Existance:", a)
-
-    b = discord.opus.load_opus(a)
-    print("debug: LOADER: Loading Opus . . . /")
-
+    findlib = ctypes.util.find_library(LIBOPUS_PATH_JSON)
+    discord.opus.load_opus(findlib)
+    prLog.debug(f'Opus loaded through paths. Status: {str(discord.opus.is_loaded())}')
     c = discord.opus.is_loaded()
-    print("debug: LOADER: Opus Is Loaded: ", c)
 
 if 'win' in currOs().lower():
     loadOpusLib()
@@ -307,10 +305,11 @@ class Music(commands.Cog):
     async def music(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send(":x: **Missing/Invalid Subcommand**")
+            prLog.info(f'music recieved a missing/invalid subcommand by {ctx.author} at {ctx.author.guild}')
 
     @music.command(name='join', invoke_without_subcommand=True, brief='Join a VC with user.')
     async def _join(self, ctx: commands.Context):
-        print(f"debug: TRIGGER: music join command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music join command started by {ctx.author} at {ctx.author.guild}")
 
         if not ctx.author.voice:
             raise VoiceError('You are not connected to a voice channel')
@@ -321,12 +320,13 @@ class Music(commands.Cog):
 
         ctx.voice_state.voice = await destination.connect()
         await ctx.message.add_reaction('✅')
-        print(f"debug: TRIGGER: music join command complete at {ctx.author.guild}")
+
+        prLog.info(f"music join command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='summon', brief='Move to a mentioned VC channel')
     @commands.has_permissions(manage_guild=True)
     async def _summon(self, ctx: commands.Context, *, channel: discord.VoiceChannel = None):
-        print(f"debug: TRIGGER: music summon command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music summon command started by {ctx.author} at {ctx.author.guild}")
 
         if not channel and not ctx.author.voice:
             raise VoiceError('You are neither connected to a voice channel nor specified a channel to join.')
@@ -338,12 +338,13 @@ class Music(commands.Cog):
 
         ctx.voice_state.voice = await destination.connect()
         await ctx.message.add_reaction('✅')
-        print(f"debug: TRIGGER: music summon command complete at {ctx.author.guild}")
+        
+        prLog.info(f"music summon command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='leave', aliases=['disconnect'], brief='Leave the VC')
     @commands.has_permissions(manage_guild=True)
     async def _leave(self, ctx: commands.Context):
-        print(f"debug: TRIGGER: music leave command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music leave command started by {ctx.author} at {ctx.author.guild}")
 
         if not ctx.voice_state.voice:
             return await ctx.send('Not connected to any voice channel.')
@@ -351,18 +352,21 @@ class Music(commands.Cog):
         await ctx.voice_state.stop()
         del self.voice_states[ctx.guild.id]
         await ctx.send("Disconnected from VC")
-        print(f"debug: TRIGGER: music leave command complete at {ctx.author.guild}")
+        
+        prLog.info(f"music leave command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='now', aliases=['current', 'playing'], brief='Show currently playing audio')
     async def _now(self, ctx: commands.Context):
-        print(f"debug: TRIGGER: music now command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music now command started by {ctx.author} at {ctx.author.guild}")
+        
         await ctx.send(embed=ctx.voice_state.current.create_embed())
-        print(f"debug: TRIGGER: music now command complete at {ctx.author.guild}")
+        
+        prLog.info(f"music now command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='pause', brief='Pause running audio')
     @commands.has_permissions(manage_guild=True)
     async def _pause(self, ctx: commands.Context):
-        print(f"debug: TRIGGER: music pause command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music pause command started by {ctx.author} at {ctx.author.guild}")
 
         if ctx.voice_state.voice.is_playing():
             ctx.voice_state.voice.pause()
@@ -370,12 +374,12 @@ class Music(commands.Cog):
         else:
             await ctx.send("Music is already paused")
         
-        print(f"debug: TRIGGER: music pause command complete at {ctx.author.guild}")
+        prLog.info(f"music pause command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='resume', brief='Resume paused audio')
     @commands.has_permissions(manage_guild=True)
     async def _resume(self, ctx: commands.Context):
-        print(f"debug: TRIGGER: music resume command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music resume command started by {ctx.author} at {ctx.author.guild}")
 
         if ctx.voice_state.voice.is_paused():
             ctx.voice_state.voice.resume()
@@ -383,12 +387,12 @@ class Music(commands.Cog):
         else:
             await ctx.send("Music Not Paused")
 
-        print(f"debug: TRIGGER: music resume command complete at {ctx.author.guild}")
+        prLog.info(f"music resume command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='stop', brief='Stop running audio')
     @commands.has_permissions(manage_guild=True)
     async def _stop(self, ctx: commands.Context):
-        print(f"debug: TRIGGER: music stop command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music stop command started by {ctx.author} at {ctx.author.guild}")
 
         ctx.voice_state.songs.clear()
 
@@ -398,11 +402,11 @@ class Music(commands.Cog):
         else:
             await ctx.send("No song is being played")
 
-        print(f"debug: TRIGGER: music stop command complete at {ctx.author.guild}")
+        prLog.info(f"music stop command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='skip', brief='Skip to the next audio in queue')
     async def _skip(self, ctx: commands.Context):
-        print(f"debug: TRIGGER: music skip command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music skip command started by {ctx.author} at {ctx.author.guild}")
 
         if not ctx.voice_state.is_playing:
             return await ctx.send('Not playing any music right now...')
@@ -424,11 +428,12 @@ class Music(commands.Cog):
 
         else:
             await ctx.send('You have already voted to skip this song.')
-        print(f"debug: TRIGGER: music skip command complete at {ctx.author.guild}")
+        
+        prLog.info(f"music skip command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='queue', brief='Display current audio queue')
     async def _queue(self, ctx: commands.Context, *, page: int = 1):
-        print(f"debug: TRIGGER: music queue command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music queue command started by {ctx.author} at {ctx.author.guild}")
 
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('Empty queue.')
@@ -447,11 +452,11 @@ class Music(commands.Cog):
                  .set_footer(text='Viewing page {}/{}'.format(page, pages)))
         await ctx.send(embed=embed)
 
-        print(f"debug: TRIGGER: music queue command complete at {ctx.author.guild}")
+        prLog.info(f"music queue command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='shuffle', brief='Shuffle the queue')
     async def _shuffle(self, ctx: commands.Context):
-        print(f"debug: TRIGGER: music shuffle command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music shuffle command started by {ctx.author} at {ctx.author.guild}")
 
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('Empty queue.')
@@ -459,22 +464,23 @@ class Music(commands.Cog):
         ctx.voice_state.songs.shuffle()
         await ctx.message.add_reaction('✅')
 
-        print(f"debug: TRIGGER: music shuffle command complete at {ctx.author.guild}")
+        prLog.info(f"music shuffle command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='remove', brief='Remove an audio from queue')
     async def _remove(self, ctx: commands.Context, index: int):
-        print(f"debug: TRIGGER: music remove command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music remove command started by {ctx.author} at {ctx.author.guild}")
 
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('Empty queue.')
 
         ctx.voice_state.songs.remove(index - 1)
         await ctx.message.add_reaction('✅')
-        print(f"debug: TRIGGER: music remove command complete at {ctx.author.guild}")
+        
+        prLog.info(f"music remove command finished by {ctx.author} at {ctx.author.guild}")
 
     @music.command(name='play', aliases=['add'], brief='Play or add an audio to queue')
     async def _play(self, ctx: commands.Context, *, search: str):
-        print(f"debug: TRIGGER: music play command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"music play command started by {ctx.author} at {ctx.author.guild}")
 
         if not ctx.voice_state.voice:
             await ctx.invoke(self._join)
@@ -487,7 +493,8 @@ class Music(commands.Cog):
 
             await ctx.voice_state.songs.put(song)
             await ctx.send('Enqueued {}'.format(str(source)))
-        print(f"debug: TRIGGER: music play command complete at {ctx.author.guild}")
+        
+        prLog.info(f"music play command finished by {ctx.author} at {ctx.author.guild}")
 
     @_join.before_invoke
     @_play.before_invoke
@@ -502,3 +509,4 @@ class Music(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(Music(bot))
+    prLog.debug("Plugin music is loaded")

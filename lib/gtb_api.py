@@ -1,3 +1,6 @@
+import logging as prLog
+prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', level=prLog.DEBUG, datefmt='%d-%b-%y %H:%M:%S')
+
 import base64
 import json
 import random
@@ -22,14 +25,16 @@ SPOTIFY_API_BASE_URL = urlsDict["Spotify_API_URL"]
 API_VERSION = keysDict["Spotify_API_Version"]
 SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
 
+prLog.debug("Loaded and defined all keys")
+
 def __get_token():
     client_token = base64.b64encode("{}:{}".format(CLIENT_ID, CLIENT_SECRET).encode('UTF-8')).decode('ascii')
     headers = {"Authorization": "Basic {}".format(client_token)}
     payload = {"grant_type": "client_credentials"}
     token_request = requests.post(SPOTIFY_TOKEN_URL, data=payload, headers=headers)
     access_token = json.loads(token_request.text)["access_token"]
+    prLog.debug("Fetched access token")
     return access_token
-
 
 def __request_valid_song(access_token, genre=None):
     random_wildcards = ['%25a%25', 'a%25', '%25a',
@@ -77,7 +82,7 @@ def return_song():
         with open('data/genres.json', 'r') as infile:
             valid_genres = json.load(infile)
     except FileNotFoundError:
-        print("Couldn't find genres file!")
+        prLog.error("Genres file not found")
 
     if n_args == 0:
         selected_genre = random.choice(valid_genres)
@@ -94,7 +99,7 @@ def return_song():
             result = __request_valid_song(access_token, genre=closest_genre)
             return result
         except IndexError:
-            print("Genre not found")
+            prLog.error("Genre not found")
 
 def get_lyrics(song, artist):
     try:
@@ -102,4 +107,4 @@ def get_lyrics(song, artist):
         larr = lyric.split('\n')
         return larr
     except:
-        print(f"some exception at {song}")
+        prLog.error("Exception in song search")

@@ -1,3 +1,6 @@
+import logging as prLog
+prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', level=prLog.DEBUG, datefmt='%d-%b-%y %H:%M:%S')
+
 from discord import Embed
 from discord.ext import commands
 
@@ -35,7 +38,8 @@ class SUtils(commands.Cog):
 
     @commands.command(name='weather', brief='Show current weather of a location')
     async def weather(self, ctx,  *, city):
-        print(f"debug: TRIGGER: weather command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"weather command started by {ctx.author} at {ctx.author.guild}")
+
         requestURL = (str(json.load(open('data/urls.json', 'r'))["Weather_API_URL"]).replace("!!CITY_NAME_GOES_HERE!!", city)).replace('!!API_KEY_GOES_HERE!!', json.load(open('data/api_keys.json', 'r'))["Weather_API_KEY"])
         data = requests.get(requestURL).json()
         cleared_data = {
@@ -51,10 +55,13 @@ class SUtils(commands.Cog):
         for key, value in cleared_data.items():
             embed.add_field(name=key, value=value)
         await ctx.send(embed=embed)
-        print(f"debug: TRIGGER: weather command complete at {ctx.author.guild}")
+        
+        prLog.info(f"weather command finished by {ctx.author} at {ctx.author.guild}")
         
     @commands.command(name="Wikipedia", aliases=['wiki', 'wikipedia'], brief="Get summary of a wikipedia article", description="This commands gets summary of a topic from a wikipedia article. Usage: eb wiki Bruno Mars")
     async def wikipedia(self, ctx, *, query):
+        prLog.info(f"wikipedia command started by {ctx.author} at {ctx.author.guild}")
+
         requestUrl = str(json.load(open('data/urls.json', 'r'))["Wikipedia_URL"]).replace('!!QUERY_GOES_HERE!!', urlfix(query))
         data = requests.get(requestUrl)
         if data.status_code != 200:
@@ -62,14 +69,22 @@ class SUtils(commands.Cog):
         else:
             await ctx.send(cleanBraces(htm.fromstring(data.text.split('<p>')[1].split('</p>')[0]).text_content()))
 
+        prLog.info(f"wikipedia command finished by {ctx.author} at {ctx.author.guild}")
+
     @commands.command(name="translate", aliases=['gtrans'], brief='Translate text to a wide variety of languages.', description='This command translates text to another language. Usage: eb translate en jus de chocolat (Output -> Chocolate Juice)')
     async def gtrans(self, ctx, langcode, *, text):
+        prLog.info(f"gtrans command started by {ctx.author} at {ctx.author.guild}")
+
         tobj = translator.translate(text, dest=langcode)
         srcl = Language.make(language=tobj.src).display_name()
         await ctx.send('**__Original Text:__** {}\n**__Translated Text:__** {}\n**__Pronounciation:__** {}\n**__Source Language:__** {}'.format(text, tobj.text, tobj.pronunciation, srcl))
 
+        prLog.info(f"gtrans command finished by {ctx.author} at {ctx.author.guild}")
+
     @commands.command(name='suggest', brief='Suggest something for the bot', description='This command sends us (the developers) a message. So you can give us a suggestion. Example: a suggestion to bring back a command from the legacy version of the bot.')
     async def suggest(self, ctx, *, msg):
+        prLog.info(f"suggest command started by {ctx.author} at {ctx.author.guild}")
+
         url = json.load(open('data/urls.json', 'r'))["Webhook_URL"]
         timestamp = str(datetime.datetime.utcnow())
         msg = 'DPY-001_{} (SUGESSTION MESSAGE)\n```{}```'.format(timestamp, msg)
@@ -81,9 +96,13 @@ class SUtils(commands.Cog):
         
         await ctx.send('Message Sent :white_check_mark:')
 
+        prLog.info(f"suggest command finished by {ctx.author} at {ctx.author.guild}")
+
     # UNDER DEVELOPENT, DOESNT WORK YET
     @commands.command(name='timein', brief='Get your time in some other timezone!!', description='This command will convert a given time of your timezone to another specified timezone. Supports both 12-hour time and 24-hour time input. Outputs 24-hour time. Only accepts timezone regions like \'Asia/Kolkata\' as parameters. Formats like \'EST\' or \'IST\' are not allowed!')
     async def timein(self, ctx, your_tz, convert_time, convertTo_tz):
+        prLog.info(f"timein command started by {ctx.author} at {ctx.author.guild}")
+
         local_time = str(convert_time)
         local_tz = str(your_tz)
         convert_tz = str(convertTo_tz)
@@ -107,5 +126,8 @@ class SUtils(commands.Cog):
 
         await ctx.send('**Converted Time:** {}:{}'.format(converted_dtobj.hour, converted_dtobj.minute))
 
+        prLog.info(f"timein command finished by {ctx.author} at {ctx.author.guild}")
+
 async def setup(bot):
     await bot.add_cog(SUtils(bot))
+    prLog.debug("Plugin SUtils is loaded")

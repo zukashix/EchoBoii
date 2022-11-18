@@ -1,3 +1,6 @@
+import logging as prLog
+prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', level=prLog.DEBUG, datefmt='%d-%b-%y %H:%M:%S')
+
 import discord
 import random
 from discord.ext import commands
@@ -11,7 +14,8 @@ class Games(commands.Cog):
 
     @commands.command(name='rps', brief='Play Rock Paper Scissors with the bot!')
     async def rps(self, ctx, *, question = random.choice(objs)):
-        print(f'debug: TRIGGER: rps command trigrred by {ctx.author} at {ctx.author.guild}')
+        prLog.info(f'rps command started by {ctx.author} at {ctx.author.guild}')
+
         objs_in = ['Rock','Paper','Scissors','rock','paper','scissors','Stone','stone']
         objs = ["Rock","Paper","Scissors"]
         if question in objs_in:
@@ -27,11 +31,12 @@ class Games(commands.Cog):
             await ctx.send(embed = embed)
         else:
             await ctx.send("Enter A Correct Object eg- Rock, paper, Scissors, stone.")
-        print(f'debug: TRIGGER: rps command complete at {ctx.author.guild}')
+        
+        prLog.info(f'rps command finished by {ctx.author} at {ctx.author.guild}')
 
     @commands.command(name='8ball', brief='Test your fate with the 8ball game!')
     async def _8ball(self, ctx, *, question):
-        print(f"debug: TRIGGER: 8ball command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f'8ball command started by {ctx.author} at {ctx.author.guild}')
 
         answers = [
         "It is certain.",
@@ -62,11 +67,12 @@ class Games(commands.Cog):
 
         await ctx.send(embed = embed)
 
-        print(f"debug: TRIGGER: 8ball command complete at {ctx.author.guild}")
+        prLog.info(f'8ball command finished by {ctx.author} at {ctx.author.guild}')
 
     @commands.command(name='battle', brief='Play a battle game against the bot! (Pretty dumb ngl)')
     async def battle(self, ctx):
-        print(f'debug: TRIGGER: battle command trigrred by {ctx.author} at {ctx.author.guild}')
+        prLog.info(f'battle command started by {ctx.author} at {ctx.author.guild}')
+
         num = random.randint(0,10)
         bot_objs = random.randint(0,10)
         num = int(num)
@@ -87,11 +93,14 @@ class Games(commands.Cog):
                 await ctx.send("No one could survive!")
             else:
                 await ctx.send("Well done, Captain!")
-        print(f'debug: TRIGGER: battle command complete at {ctx.author.guild}')
+        
+        prLog.info(f'battle command finished by {ctx.author} at {ctx.author.guild}')
 
     # never completed
     @commands.command(name='armwrestle', brief='Multiplayer armwrestle game! (Probably is broken)')
     async def __armwrestle__(self, ctx):
+        prLog.info(f'armwrestle command started by {ctx.author} at {ctx.author.guild}')
+
         await ctx.send(f"**Type 'JOIN' to join {ctx.author.display_name} for armwrestling**")
         msg1 = await self.bot.wait_for('message', check = None)
         player_msgs = 0
@@ -123,5 +132,8 @@ class Games(commands.Cog):
         else:
             pass
 
+        prLog.info(f'armwrestle command finished by {ctx.author} at {ctx.author.guild}')
+
 async def setup(bot):
     await bot.add_cog(Games(bot))
+    prLog.debug("Plugin games is loaded")

@@ -1,3 +1,6 @@
+import logging as prLog
+prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', level=prLog.DEBUG, datefmt='%d-%b-%y %H:%M:%S')
+
 import discord
 import random
 from discord.ext import commands
@@ -6,6 +9,7 @@ import aiohttp
 import json
 
 MEME_FETCH_URL = json.load(open('data/urls.json', 'r'))["Memes_URL"]
+prLog.debug("Meme URL fetched")
 
 spamLoop = True
 spamRunning = False
@@ -17,7 +21,8 @@ class Fun(commands.Cog):
 
     @commands.command(name='rickroll', brief='Rickroll someone!')
     async def rickroll(self, ctx, *, user: discord.Member = None):
-        print(f'debug: TRIGGER: rickroll command triggered by {ctx.author} at {ctx.author.guild}')
+        prLog.info(f"rickroll command started by {ctx.author} at {ctx.author.guild}")
+
         if user == None:
             user = ctx.author
 
@@ -30,10 +35,13 @@ class Fun(commands.Cog):
             welcome_text = f'Hey {user.display_name}, This is for you :upside_down:'
             end_text = f'There, You just got RickRolled by {ctx.author.display_name} :joy_cat:'
             await ctx.send(welcome_text + "\n" + rickroll_text + "\n" + end_text)
-        print(f'debug: TRIGGER: rickroll command complete at {ctx.author.guild}')
+            
+        prLog.info(f"rickroll command finished by {ctx.author} at {ctx.author.guild}")
 
     @commands.command(name='spam', brief='Spam without hassle!!', description='This command spams text/images with one command. WARNING: To avoid spamming on main channels, the spam channel must contain the word \'spam\' in it, or the command will fail.')
     async def spam(self, ctx, numberOftimes, content):
+        prLog.info(f"spam command started by {ctx.author} at {ctx.author.guild}")
+
         try:
             int(numberOftimes)
         except:
@@ -63,13 +71,17 @@ class Fun(commands.Cog):
                 self.spamFlag = False
                 break
 
+        prLog.info(f"spam command finished by {ctx.author} at {ctx.author.guild}")
+
     @commands.command(name='spamStop', brief='Stop a running spam.', description='This command stops a running spam. WARNING: This command is currently unstable and will stop any spam in any server. So consider not using it if not important. (PS: We\'re still trying to find a better way to spam)')
     async def spamStop(self, ctx):
+        prLog.info(f"spamStop command started by {ctx.author} at {ctx.author.guild}")
         self.spamFlag = True
+        prLog.info(f"spamStop command finished by {ctx.author} at {ctx.author.guild}")
 
     @commands.command(name='meme', brief='Show a meme from reddit.')
     async def meme(self, ctx):
-        print(f"debug: TRIGGER: meme command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f"meme command started by {ctx.author} at {ctx.author.guild}")
 
         embed = discord.Embed(title = "Meme!", colour = ctx.author.colour)
         async with aiohttp.ClientSession() as cs:
@@ -79,15 +91,8 @@ class Fun(commands.Cog):
                 embed.set_footer(text = f"Command executed by {ctx.author}")
                 await ctx.send(embed = embed)
 
-        print(f"debug: TRIGGER: meme command complete at {ctx.author.guild}")
-
-# Errors
-    @spam.error
-    async def cmd_spam_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            print(f'debug: TRIGGER: spam command (error_missing_args) triggered by {ctx.author} at {ctx.author.guild}')
-            await ctx.send("Usage: `eB spam number spam_text`\nExample: `eB spam 20 size doesn\'t matter`")
-            print(f'debug: TRIGGER: spam command (error_missing_args) complete at {ctx.author.guild}')
+        prLog.info(f"meme command finished by {ctx.author} at {ctx.author.guild}")
 
 async def setup(bot):
     await bot.add_cog(Fun(bot))
+    prLog.debug("Plugin fun is loaded")

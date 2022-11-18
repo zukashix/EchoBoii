@@ -1,3 +1,6 @@
+import logging as prLog
+prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', level=prLog.DEBUG, datefmt='%d-%b-%y %H:%M:%S')
+
 from lib import gtb_api as gtba
 from discord.ext import commands, tasks
 import asyncio
@@ -37,6 +40,7 @@ class GuessMus(commands.Cog, name='Guess The Music'):
 
     @commands.command(name='gtm', brief='Guess the music game!', description='A guessing game in which you will have 60 seconds and you will be given a song\'s lyrics every 15 seconds. You must guess it to win!')
     async def gtm(self, ctx):
+        prLog.info(f'gtm command started by {ctx.author} at {ctx.author.guild}')
 
         await ctx.send("Finding a song for you!!")
         songdat = gtba.return_song()
@@ -92,5 +96,8 @@ class GuessMus(commands.Cog, name='Guess The Music'):
                     await ctx.send("{}, I think you guessed the author! Now go for the song!!".format(msg.author.name))
                     continue
 
+        prLog.info(f'rps command started by {ctx.author} at {ctx.author.guild}')
+
 async def setup(bot):
     await bot.add_cog(GuessMus(bot))
+    prLog.debug("Plugin guess_music is loaded")

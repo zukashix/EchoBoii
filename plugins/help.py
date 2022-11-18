@@ -1,3 +1,6 @@
+import logging as prLog
+prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', level=prLog.DEBUG, datefmt='%d-%b-%y %H:%M:%S')
+
 import discord
 from discord.ext import commands
 from time import sleep
@@ -17,13 +20,17 @@ class Debug(commands.Cog):
 
     @commands.command(name='about', brief='Description about bot.')
     async def about(self, ctx):
-        print(f'debug: TRIGGER: about command triggered by {ctx.author} at {ctx.author.guild}')
+        prLog.info(f'about command started by {ctx.author} at {ctx.author.guild}')
+
         about_bot = "Hello from EchoBoii!\n---------------------\nThis is a discord bot made for fun games and utility commands (shitty outdated description and yes im too lazy to update it).\n---------------------\nThe bot was created and being managed by Zukashi#7071 and BraxtonElmer#idkWhatsHisTag\nPlease DM Zukashi#7071 if there are any bugs or use the suggest command"
         await ctx.send(f"```{about_bot}```")
-        print(f'debug: TRIGGER: about command complete at {ctx.author.guild}')
+        
+        prLog.info(f'about command finished by {ctx.author} at {ctx.author.guild}')
 
     @commands.command(name='botserverdata', brief='List of servers the bot is in')
     async def botserverdata(self, ctx):
+        prLog.info(f'botserverdata command started by {ctx.author} at {ctx.author.guild}')
+
         if ctx.author.id == 463657352386707456:
             await ctx.send('List of servers the bot is in:')
             for serv in self.bot.guilds:
@@ -31,9 +38,12 @@ class Debug(commands.Cog):
         else:
             await ctx.send('You are not authorized to perform this action.')
 
+        prLog.info(f'botserverdata command finished by {ctx.author} at {ctx.author.guild}')
+
     @commands.command(name='status', brief='Get bot\'s status')
     async def status(self, ctx, technef = 'None'):
-        print(f"debug: TRIGGER: status command triggered by {ctx.author} at {ctx.author.guild}")
+        prLog.info(f'status command started by {ctx.author} at {ctx.author.guild}')
+
         bot_ping = int(self.bot.latency * 1000)
         bot_servers = len(self.bot.guilds)
         bot_status = "Online"
@@ -59,10 +69,12 @@ class Debug(commands.Cog):
         await ctx.send(embed = embed)
 
         if technef.lower() == 'techinf':
+            prLog.info(f'{ctx.author} at {ctx.author.guild} has passed techinf to status')
             await ctx.send("**Techincal Information:**")
             await ctx.send("```\nPython: {}.{}.{}\n---------------\nDiscord.py: {}\n---------------\nHost Device: {}\n---------------\nBuild: {}```".format(pyv.major, pyv.minor, pyv.micro, dcv, bot_host, bot_build))
 
-        print(f"debug: TRIGGER: status command complete at {ctx.author.guild}")
+        prLog.info(f'status command finished by {ctx.author} at {ctx.author.guild}')
 
 async def setup(bot):
     await bot.add_cog(Debug(bot))
+    prLog.debug('Plugin help is loaded')
