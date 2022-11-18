@@ -1,6 +1,7 @@
 discord[voice]
 youtube_dl
 requests
+PyNaCl
 google-api-python-client
 wikipedia
 googletrans==4.0.0-rc1
