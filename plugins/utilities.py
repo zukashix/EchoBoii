@@ -131,7 +131,7 @@ class Utilities(commands.Cog):
 
         embed.set_author(name = f"Announcement by {ctx.author.display_name}", icon_url = ctx.author.avatar.url)
 
-        embed.add_field(name = f"------------------\n {announcement}", value = "------------------", inline = False)
+        embed.add_field(name = f" ", value = "------------------\n{announcement}\n------------------", inline = False)
 
         await channel.send(embed = embed)
 
