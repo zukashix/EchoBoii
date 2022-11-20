@@ -4,7 +4,7 @@ prLog.basicConfig(format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s',
 import discord
 import random
 from discord.ext import commands
-from time import sleep
+from asyncio import sleep
 from discord.ext.commands import has_permissions, CheckFailure
 import datetime
 import time
