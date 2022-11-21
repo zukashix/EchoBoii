@@ -89,17 +89,13 @@ class Utilities(commands.Cog):
         while msg.author != ctx.author:
             msg = await self.bot.wait_for('message', check = None)
         if msg.author == ctx.author:
+            msgf = msg.content
+            type_end_time = time.time()
+            difference = int(round(type_end_time - type_start_time))
+            time_taken = str(datetime.timedelta(seconds=difference))
             if msgf == chosen_typesent:
-                msgf = msg.content
-                type_end_time = time.time()
-                difference = int(round(type_end_time - type_start_time))
-                time_taken = str(datetime.timedelta(seconds=difference))
                 await ctx.send(f'You Typed:\n"**{msgf}**"\nTime Taken: {time_taken}')
             else:
-                msgf = msg.content
-                type_end_time = time.time()
-                difference = int(round(type_end_time - type_start_time))
-                time_taken = str(datetime.timedelta(seconds=difference))
                 await ctx.send(f'**You couldnt type the exact thing**\n**What you had to type:** {chosen_typesent}\n**What you typed:** `{msgf}`\n**Time Taken:** {time_taken}')
         
         prLog.info(f'typetest command finished by {ctx.author} at {ctx.author.guild}')
