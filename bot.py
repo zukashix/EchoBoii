@@ -20,7 +20,8 @@ class MyBot(commands.Bot):
             'plugins.music',
             'plugins.SUtils',
             'plugins.utilities',
-            'plugins.youtube'
+            'plugins.youtube',
+            'plugins.slashCmd'
         ]
 
         if not os.path.isfile('data/build.json'):
